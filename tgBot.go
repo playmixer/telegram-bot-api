@@ -15,25 +15,27 @@ type TelegramBot struct {
 	ApiURL       string
 	Token        string
 	LastUpdateId int64
+	Timeout      time.Duration
 	Routes       []Handle
 }
 
 func NewBot(token string) (TelegramBot, error) {
 	tg := TelegramBot{
-		ApiURL: "https://api.telegram.org/bot",
-		Token:  token,
-		Routes: make([]Handle, 0),
+		ApiURL:  "https://api.telegram.org/bot",
+		Token:   token,
+		Timeout: time.Second,
+		Routes:  make([]Handle, 0),
 	}
 
 	if token == "" {
-		return tg, fmt.Errorf("Token is empty")
+		return tg, fmt.Errorf("token is empty")
 	}
 
 	return tg, nil
 }
 
 func (t *TelegramBot) Polling() {
-	timeout := time.NewTicker(1 * time.Second)
+	timeout := time.NewTicker(t.Timeout)
 	for {
 
 		updates := t.GetUpdates(t.LastUpdateId+1, 0, 0)
@@ -53,7 +55,9 @@ func (t *TelegramBot) Polling() {
 }
 
 func (t *TelegramBot) GetApiUrl(method string) string {
-	return fmt.Sprintf("%s%s/%s", t.ApiURL, t.Token, method)
+	url := fmt.Sprintf("%s%s/%s", t.ApiURL, t.Token, method)
+	// println(url)
+	return url
 }
 
 func (t *TelegramBot) Get(url string, resInterface interface{}) error {

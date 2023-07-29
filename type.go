@@ -12,6 +12,19 @@ const (
 	CHANNEL    ChatType = "channel"
 )
 
+type ChatAction string
+
+const (
+	TYPING          ChatAction = "typing"
+	UPLOAD_PHOTO    ChatAction = "upload_photo"
+	RECORD_VIDEO    ChatAction = "record_video"
+	UPLOAD_VIDEO    ChatAction = "upload_video"
+	RECORD_AUDIO    ChatAction = "record_audio"
+	UPLOAD_AUDIO    ChatAction = "upload_audio"
+	UPLOAD_DOCUMENT ChatAction = "upload_document"
+	FIND_LOCATION   ChatAction = "find_location"
+)
+
 type Chat struct {
 	Id                          int64    `json:"id"`                             //Уникальный идентификатор чата. Абсолютное значение не превышает 1e13
 	Type                        ChatType `json:"type"`                           //Тип чата: “private”, “group”, “supergroup” или “channel”
@@ -158,4 +171,11 @@ type SendMessageResult struct {
 	Result      Message `json:"result"`
 	ErrorCode   int     `json:"error_code"`
 	Description string  `json:"description"`
+}
+
+type Result struct {
+	Ok          bool   `json:"ok"`
+	Result      bool   `json:"result"`
+	ErrorCode   int    `json:"error_code"`
+	Description string `json:"description"`
 }
