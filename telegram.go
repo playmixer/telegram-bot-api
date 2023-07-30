@@ -44,7 +44,7 @@ func (t *TelegramBot) Polling() {
 			if update.UpdateId > t.LastUpdateId {
 				t.LastUpdateId = update.UpdateId
 			}
-			fmt.Println(update)
+			// fmt.Println(update)
 			for _, route := range t.Routes {
 				go route(update, t)
 			}
