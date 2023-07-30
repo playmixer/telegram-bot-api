@@ -44,7 +44,7 @@ func (t *TelegramBot) Polling() {
 			if update.UpdateId > t.LastUpdateId {
 				t.LastUpdateId = update.UpdateId
 			}
-			// fmt.Println(update)
+
 			for _, route := range t.Routes {
 				go route(update, t)
 			}
@@ -56,12 +56,10 @@ func (t *TelegramBot) Polling() {
 
 func (t *TelegramBot) GetApiUrl(method string) string {
 	url := fmt.Sprintf("%s%s/%s", t.ApiURL, t.Token, method)
-	// println(url)
 	return url
 }
 
 func (t *TelegramBot) Get(url string, resInterface interface{}) error {
-
 	// Отправка GET-запроса
 	response, err := http.Get(url)
 	if err != nil {
@@ -78,7 +76,6 @@ func (t *TelegramBot) Get(url string, resInterface interface{}) error {
 	}
 
 	// Декодирование JSON-данных в структуру
-	// fmt.Println(string(body))
 	err = json.Unmarshal(body, resInterface)
 	if err != nil {
 		fmt.Printf("Ошибка при декодировании JSON: %s", err)
@@ -90,6 +87,14 @@ func (t *TelegramBot) Get(url string, resInterface interface{}) error {
 
 func (t *TelegramBot) AddHandle(f Handle) {
 	t.Routes = append(t.Routes, f)
+}
+
+func Text(f Handle) Handle {
+	return func(update UpdateResult, bot *TelegramBot) {
+		if !strings.HasPrefix(update.Message.Text, "/") {
+			f(update, bot)
+		}
+	}
 }
 
 func Command(cmd string, f Handle) Handle {
