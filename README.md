@@ -35,7 +35,7 @@ func echo(update tg.UpdateResult, bot *tg.TelegramBot) {
 }
 
 func main() {
-	bot, err := tg.NewBot("933196870:AAGHMTJUVFr3eeeUKgsCagiSNb0i3fBnSE0")
+	bot, err := tg.NewBot("<TELEGRAM TOKEN>")
 	if err != nil {
 		log.Panic(err)
 	}
