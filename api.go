@@ -21,8 +21,20 @@ func (t *TelegramBot) GetUpdates(offset, limit, timeout int64) Update {
 	return data
 }
 
-func (t *TelegramBot) SendMessage(chatId int64, text string) SendMessageResult {
-	url := t.GetApiUrl(fmt.Sprintf("%s?chat_id=%v&text=%s", "sendMessage", chatId, formatingText(text)))
+func urlAddOption(url string, options ...MessageOption) string {
+	for _, o := range options {
+		switch o.Field {
+		case MOFParseMode:
+			url += fmt.Sprintf("&%s=%s", o.Field, o.Value)
+		}
+	}
+
+	return url
+}
+
+func (t *TelegramBot) SendMessage(chatId int64, text string, options ...MessageOption) SendMessageResult {
+	url := t.GetApiUrl(fmt.Sprintf("sendMessage?chat_id=%v&text=%s", chatId, formatingText(text)))
+	url = urlAddOption(url, options...)
 
 	var result SendMessageResult
 	err := t.Get(url, &result)
@@ -33,8 +45,9 @@ func (t *TelegramBot) SendMessage(chatId int64, text string) SendMessageResult {
 	return result
 }
 
-func (t *TelegramBot) ReplyToMessage(chatId int64, messageId int64, text string) SendMessageResult {
-	url := t.GetApiUrl(fmt.Sprintf("%s?chat_id=%v&reply_to_message_id=%v&text=%s", "sendMessage", chatId, messageId, formatingText(text)))
+func (t *TelegramBot) ReplyToMessage(chatId int64, messageId int64, text string, options ...MessageOption) SendMessageResult {
+	url := t.GetApiUrl(fmt.Sprintf("sendMessage?chat_id=%v&reply_to_message_id=%v&text=%s", chatId, messageId, formatingText(text)))
+	url = urlAddOption(url, options...)
 
 	var result SendMessageResult
 	err := t.Get(url, &result)
@@ -45,8 +58,9 @@ func (t *TelegramBot) ReplyToMessage(chatId int64, messageId int64, text string)
 	return result
 }
 
-func (t *TelegramBot) EditMessage(chatId int64, messageId int64, text string) SendMessageResult {
-	url := t.GetApiUrl(fmt.Sprintf("%s?chat_id=%v&message_id=%v&text=%s", "editMessageText", chatId, messageId, formatingText(text)))
+func (t *TelegramBot) EditMessage(chatId int64, messageId int64, text string, options ...MessageOption) SendMessageResult {
+	url := t.GetApiUrl(fmt.Sprintf("editMessageText?chat_id=%v&message_id=%v&text=%s", chatId, messageId, formatingText(text)))
+	url = urlAddOption(url, options...)
 
 	var result SendMessageResult
 	err := t.Get(url, &result)

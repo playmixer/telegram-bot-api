@@ -179,3 +179,22 @@ type Result struct {
 	ErrorCode   int    `json:"error_code"`
 	Description string `json:"description"`
 }
+
+// Формат сообщения
+type MessageStyle string
+
+const (
+	MessageStyleMarkdownV2 MessageStyle = "MarkdownV2"
+	MessageStyleHTML       MessageStyle = "HTML"
+)
+
+type MessageOptionsField string
+
+const (
+	MOFParseMode MessageOptionsField = "parse_mode"
+)
+
+type MessageOption struct {
+	Field MessageOptionsField
+	Value string
+}
