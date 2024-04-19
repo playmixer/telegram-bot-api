@@ -174,24 +174,52 @@ func (i *InlineKeyboardMarkup) Add(keyboard []InlineKeyboardButton) {
 	i.InlineKeyboard = append(i.InlineKeyboard, keyboard)
 }
 
-func (i *InlineKeyboardMarkup) Button(text string) InlineKeyboardButton {
-	return InlineKeyboardButton{
+func (i *InlineKeyboardMarkup) Button(text string) *InlineKeyboardButton {
+	return &InlineKeyboardButton{
 		Text: text,
 	}
 }
 
-func (ik *InlineKeyboardButton) SetUrl(url string) {
+func (ik *InlineKeyboardButton) SetUrl(url string) *InlineKeyboardButton {
 	ik.Url = &url
+	return ik
 }
 
-func (ik *InlineKeyboardButton) SetCallbackData(data string) {
+func (ik *InlineKeyboardButton) SetCallbackData(data string) *InlineKeyboardButton {
 	ik.CallbackData = &data
+	return ik
 }
 
-func (ik *InlineKeyboardButton) SetSwitchInlineQuery(data string) {
+func (ik *InlineKeyboardButton) SetSwitchInlineQuery(data string) *InlineKeyboardButton {
 	ik.SwitchInlineQuery = &data
+	return ik
 }
 
-func (cbq *CallbackQuery) String() string {
-	return ""
+func RemoveKeyboard() ReplyKeyboardRemove {
+	return ReplyKeyboardRemove{
+		RemoveKeyboard: true,
+	}
+}
+
+func (rkr *ReplyKeyboardRemove) Option() MessageOption {
+	b, _ := json.Marshal(rkr)
+	return MessageOption{
+		Field: MOFReplyMarkup,
+		Value: string(b),
+	}
+}
+
+func NewForceReply() ForceReply {
+	return ForceReply{ForceReply: true}
+}
+
+func (fr *ForceReply) Option() MessageOption {
+	b, _ := json.Marshal(fr)
+	return MessageOption{
+		Field: MOFReplyMarkup,
+		Value: string(b),
+	}
+}
+func (fr *ForceReply) SetInputFieldPlaceholder(data string) {
+	fr.InputFieldPlaceholder = &data
 }

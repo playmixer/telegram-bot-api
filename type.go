@@ -294,11 +294,11 @@ type LoginUrl struct {
 }
 
 type SwitchInlineQueryChosenChat struct {
-	Query             string `json:"query"`               // Optional. The default inline query to be inserted in the input field. If left empty, only the bot's username will be inserted
-	AllowUserChats    bool   `json:"allow_user_chats"`    // Optional. True, if private chats with users can be chosen
-	AllowBotChats     bool   `json:"allow_bot_chats"`     // Optional. True, if private chats with bots can be chosen
-	AllowGroupChats   bool   `json:"allow_group_chats"`   // Optional. True, if group and supergroup chats can be chosen
-	AllowChannelChats bool   `json:"allow_channel_chats"` // Optional. True, if channel chats can be chosen
+	Query             string `json:"query"`                         // Optional. The default inline query to be inserted in the input field. If left empty, only the bot's username will be inserted
+	AllowUserChats    bool   `json:"allow_user_chats,omitempty"`    // Optional. True, if private chats with users can be chosen
+	AllowBotChats     bool   `json:"allow_bot_chats,omitempty"`     // Optional. True, if private chats with bots can be chosen
+	AllowGroupChats   bool   `json:"allow_group_chats,omitempty"`   // Optional. True, if group and supergroup chats can be chosen
+	AllowChannelChats bool   `json:"allow_channel_chats,omitempty"` // Optional. True, if channel chats can be chosen
 }
 
 type InlineKeyboardButton struct {
@@ -316,4 +316,15 @@ type InlineKeyboardButton struct {
 
 type InlineKeyboardMarkup struct {
 	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
+}
+
+type ReplyKeyboardRemove struct {
+	RemoveKeyboard bool `json:"remove_keyboard"`     // Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use one_time_keyboard in ReplyKeyboardMarkup)
+	Selective      bool `json:"selective,omitempty"` // Optional. Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message in the same chat and forum topic, sender of the original message.
+}
+
+type ForceReply struct {
+	ForceReply            bool    `json:"force_reply"`             // Shows reply interface to the user, as if they manually selected the bot's message and tapped 'Reply'
+	InputFieldPlaceholder *string `json:"input_field_placeholder"` // Optional. The placeholder to be shown in the input field when the reply is active; 1-64 characters
+	Selective             bool    `json:"selective"`               // Optional. Use this parameter if you want to force reply from specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message in the same chat and forum topic, sender of the original message.
 }
