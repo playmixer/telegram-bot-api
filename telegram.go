@@ -3,7 +3,7 @@ package telegram_bot
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -69,7 +69,7 @@ func (t *TelegramBot) Get(url string, resInterface interface{}) error {
 	defer response.Body.Close()
 
 	// Чтение ответа
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Printf("Ошибка при чтении ответа: %s", err)
 		return err
@@ -103,4 +103,95 @@ func Command(cmd string, f Handle) Handle {
 			f(update, bot)
 		}
 	}
+}
+
+func ReplyMarkup() ReplyKeyboardMarkup {
+	return ReplyKeyboardMarkup{
+		ResizeKeyboard: true,
+	}
+}
+
+func (rm *ReplyKeyboardMarkup) Option() MessageOption {
+
+	_bRm, _ := json.Marshal(rm)
+
+	_res := make(map[string]interface{})
+
+	json.Unmarshal(_bRm, &_res)
+	res, _ := json.Marshal(_res)
+
+	return MessageOption{
+		Field: MOFReplyMarkup,
+		Value: string(res),
+	}
+}
+
+func (rm *ReplyKeyboardMarkup) Add(keyboard []KeyboardButton) {
+	rm.Keyboard = append(rm.Keyboard, keyboard)
+}
+
+func (rm *ReplyKeyboardMarkup) Button(text string) KeyboardButton {
+	return KeyboardButton{
+		Text: text,
+	}
+}
+
+func (k *KeyboardButton) SetWebApp(url string) {
+	k.WebApp = &WebAppInfo{Url: url}
+}
+
+func InlineMarkup() InlineKeyboardMarkup {
+	return InlineKeyboardMarkup{}
+}
+func (i *InlineKeyboardMarkup) Option() MessageOption {
+
+	cp := *i
+	cp.InlineKeyboard = [][]InlineKeyboardButton{}
+
+	for i, k := range i.InlineKeyboard {
+		cp.InlineKeyboard = append(cp.InlineKeyboard, []InlineKeyboardButton{})
+		for _, b := range k {
+			if b.CallbackData != nil || b.Url != nil || b.SwitchInlineQuery != nil {
+				cp.InlineKeyboard[i] = append(cp.InlineKeyboard[i], b)
+			}
+		}
+	}
+
+	_bRm, _ := json.Marshal(cp)
+
+	_res := make(map[string]interface{})
+
+	json.Unmarshal(_bRm, &_res)
+	res, _ := json.Marshal(_res)
+
+	return MessageOption{
+		Field: MOFReplyMarkup,
+		Value: string(res),
+	}
+}
+
+func (i *InlineKeyboardMarkup) Add(keyboard []InlineKeyboardButton) {
+	i.InlineKeyboard = append(i.InlineKeyboard, keyboard)
+}
+
+func (i *InlineKeyboardMarkup) Button(text string) InlineKeyboardButton {
+	return InlineKeyboardButton{
+		Text: text,
+	}
+}
+
+func (ik *InlineKeyboardButton) SetUrl(url string) {
+	ik.Url = &url
+}
+
+func (ik *InlineKeyboardButton) SetCallbackData(data string) {
+	ik.CallbackData = &data
+}
+
+func (ik *InlineKeyboardButton) SetSwitchInlineQuery(data string) {
+	ik.SwitchInlineQuery = &data
+}
+
+func (cbq *CallbackQuery) String() string {
+	return ""
 }

@@ -2,6 +2,7 @@ package telegram_bot
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 )
 
@@ -26,6 +27,8 @@ func urlAddOption(url string, options ...MessageOption) string {
 		switch o.Field {
 		case MOFParseMode:
 			url += fmt.Sprintf("&%s=%s", o.Field, o.Value)
+		case MOFReplyMarkup:
+			url += fmt.Sprintf("&%s=%s", o.Field, o.Value)
 		}
 	}
 
@@ -36,6 +39,7 @@ func (t *TelegramBot) SendMessage(chatId int64, text string, options ...MessageO
 	url := t.GetApiUrl(fmt.Sprintf("sendMessage?chat_id=%v&text=%s", chatId, formatingText(text)))
 	url = urlAddOption(url, options...)
 
+	log.Println(url)
 	var result SendMessageResult
 	err := t.Get(url, &result)
 	if err != nil {
