@@ -1,7 +1,7 @@
 package telegram_bot
 
 type User struct {
-	Id                      int32  `json:"id"`                          // Unique identifier for this user or bot. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier.
+	Id                      int64  `json:"id"`                          // Unique identifier for this user or bot. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier.
 	IsBot                   bool   `json:"is_bot"`                      // True, if this user is a bot
 	FirstName               string `json:"first_name"`                  // User's or bot's first name
 	LastName                string `json:"last_name"`                   // Optional. User's or bot's last name
