@@ -1,0 +1,27 @@
+package logger
+
+import "fmt"
+
+type Logger struct {
+}
+
+func New() *Logger {
+
+	return &Logger{}
+}
+
+func (l *Logger) INFO(t ...any) {
+	fmt.Println(t...)
+}
+
+func (l *Logger) ERROR(t ...any) {
+	fmt.Println(t...)
+}
+
+func (l *Logger) WARNING(t ...any) {
+	fmt.Println(t...)
+}
+
+func (l *Logger) DEBUG(t ...any) {
+	fmt.Println(t...)
+}

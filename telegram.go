@@ -4,10 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/playmixer/telegram-bot-api/v2/internal/logger"
 )
+
+type LoggerI interface {
+	INFO(...any)
+	ERROR(...any)
+	WARNING(...any)
+	DEBUG(...any)
+}
 
 type Handle func(update UpdateResult, bot *TelegramBot)
 
@@ -17,21 +27,35 @@ type TelegramBot struct {
 	LastUpdateId int64
 	Timeout      time.Duration
 	Routes       []Handle
+	logger       LoggerI
 }
 
-func NewBot(token string) (TelegramBot, error) {
+type Option func(*TelegramBot)
+
+func NewBot(token string, options ...Option) (*TelegramBot, error) {
 	tg := TelegramBot{
 		ApiURL:  "https://api.telegram.org/bot",
 		Token:   token,
 		Timeout: time.Second,
 		Routes:  make([]Handle, 0),
+		logger:  logger.New(),
 	}
 
 	if token == "" {
-		return tg, fmt.Errorf("token is empty")
+		return &tg, fmt.Errorf("token is empty")
 	}
 
-	return tg, nil
+	for _, opt := range options {
+		opt(&tg)
+	}
+
+	return &tg, nil
+}
+
+func Logger(log LoggerI) func(tg *TelegramBot) {
+	return func(tg *TelegramBot) {
+		tg.logger = log
+	}
 }
 
 func (t *TelegramBot) Polling() {
@@ -52,6 +76,37 @@ func (t *TelegramBot) Polling() {
 		}
 		<-timeout.C
 	}
+}
+
+func (t *TelegramBot) WebhookServer(addr string, route string) error {
+
+	r := http.NewServeMux()
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		_bBody, err := io.ReadAll(r.Body)
+		defer r.Body.Close()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+
+		update := UpdateResult{}
+
+		err = json.Unmarshal(_bBody, &update)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+
+		for _, route := range t.Routes {
+			go route(update, t)
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	return http.ListenAndServe(addr, r)
 }
 
 func (t *TelegramBot) GetApiUrl(method string) string {
