@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/playmixer/telegram-bot-api/v2/internal/logger"
+	"github.com/playmixer/telegram-bot-api/v3/internal/logger"
 )
 
 type LoggerI interface {
@@ -109,9 +109,9 @@ func (t *TelegramBot) WebhookServer(addr string, route string) error {
 	return http.ListenAndServe(addr, r)
 }
 
-func (t *TelegramBot) GetApiUrl(method string) string {
+func (t *TelegramBot) GetApiUrl(method string) tURL {
 	url := fmt.Sprintf("%s%s/%s", t.ApiURL, t.Token, method)
-	return url
+	return tURL(url)
 }
 
 func (t *TelegramBot) Get(url string, resInterface interface{}) error {
@@ -175,9 +175,9 @@ func (rm *ReplyKeyboardMarkup) Option() MessageOption {
 	json.Unmarshal(_bRm, &_res)
 	res, _ := json.Marshal(_res)
 
-	return MessageOption{
-		Field: MOFReplyMarkup,
-		Value: string(res),
+	return func(u *tURL) error {
+		u.Set(MOFReplyMarkup, string(res))
+		return nil
 	}
 }
 
@@ -219,9 +219,9 @@ func (i *InlineKeyboardMarkup) Option() MessageOption {
 	json.Unmarshal(_bRm, &_res)
 	res, _ := json.Marshal(_res)
 
-	return MessageOption{
-		Field: MOFReplyMarkup,
-		Value: string(res),
+	return func(u *tURL) error {
+		u.Set(MOFReplyMarkup, string(res))
+		return nil
 	}
 }
 
@@ -258,9 +258,9 @@ func RemoveKeyboard() ReplyKeyboardRemove {
 
 func (rkr *ReplyKeyboardRemove) Option() MessageOption {
 	b, _ := json.Marshal(rkr)
-	return MessageOption{
-		Field: MOFReplyMarkup,
-		Value: string(b),
+	return func(u *tURL) error {
+		u.Set(MOFReplyMarkup, string(b))
+		return nil
 	}
 }
 
@@ -270,9 +270,9 @@ func NewForceReply() ForceReply {
 
 func (fr *ForceReply) Option() MessageOption {
 	b, _ := json.Marshal(fr)
-	return MessageOption{
-		Field: MOFReplyMarkup,
-		Value: string(b),
+	return func(u *tURL) error {
+		u.Set(MOFReplyMarkup, string(b))
+		return nil
 	}
 }
 func (fr *ForceReply) SetInputFieldPlaceholder(data string) {

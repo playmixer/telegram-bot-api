@@ -208,11 +208,6 @@ const (
 	// MOFInlineMarkup MessageOptionsField = "inline_keyboard"
 )
 
-type MessageOption struct {
-	Field MessageOptionsField
-	Value string
-}
-
 // markup keyboard
 
 type KeyboardButtonRequestUsers struct {
